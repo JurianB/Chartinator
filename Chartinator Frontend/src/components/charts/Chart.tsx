@@ -44,12 +44,12 @@ export default function Chart(props: IChart) {
             enabled: true // SET SCROOL ZOOM TO TRUE
           },
           mode: "xy",
-          speed: 100
+          speed: 5000
         },
         pan: {
           enabled: true,
           mode: "xy",
-          speed: 100
+          speed: 5000
         }
       },
       legend: {
@@ -60,6 +60,23 @@ export default function Chart(props: IChart) {
         text: props.data.title,
       },
     },
+    animation: false,
+    spanGaps: true,
+    elements: {
+      point: {
+        radius: 0 // default to disabled in all datasets
+      }
+    },
+    scales: {
+      x:{
+        min: props.data.XMin,
+        max: props.data.XMax
+      },
+      y:{
+        min: props.data.YMin,
+        max: props.data.YMax
+      }
+    }
   };
 
   return (

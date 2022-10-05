@@ -12,5 +12,9 @@ namespace Chartinator.Shell.Core.Response
         public string  Title { get; set; }
         public List<object> Labels  { get; set; }
         public List<ChartDataSet> DataSets { get; set; }
+        public float XMin { get; set; }
+        public float XMax { get; set; }
+        public float YMin { get; set; }
+        public float YMax { get; set; }
     }
 }

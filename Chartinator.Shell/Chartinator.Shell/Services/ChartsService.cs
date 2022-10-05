@@ -33,7 +33,6 @@ namespace Chartinator.Shell.Services
             var result = new ChartDataInfo();
 
             var labels = new HashSet<float>();
-           
 
             foreach (var file in files)
             {
@@ -48,10 +47,12 @@ namespace Chartinator.Shell.Services
                     labels.Add(xValue);
                 }
                 
-                var dataSet = new ChartDataSet();
-                dataSet.Label = file.FileName;
-                dataSet.BackgroundColor = GetRandomColor();
-                dataSet.BorderColor = GetRandomColor();
+                var dataSet = new ChartDataSet
+                {
+                    Label = file.FileName,
+                    BackgroundColor = GetRandomColor(),
+                    BorderColor = GetRandomColor()
+                };
 
                 foreach (var dataPoints in fileContents)
                 {
@@ -59,15 +60,21 @@ namespace Chartinator.Shell.Services
                 }
 
                 result.DataSets.Add(dataSet);
-
-                result.Title += $"{file.FileName} ";
             }
 
             foreach (var label in labels)
             {
                 result.Labels.Add(label);
             }
-            
+
+
+            result.Title += $"Based on {result.Labels.Count + result.DataSets.SelectMany(x => x.Data).Count()} scanned data points";
+
+            result.XMin = result.DataSets.SelectMany(x => x.Data).Min();
+            result.XMax = result.DataSets.SelectMany(x => x.Data).Max();
+            result.YMin = labels.Min();
+            result.YMax = labels.Max();
+
             return result;
         }
 
