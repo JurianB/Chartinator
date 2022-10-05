@@ -1,0 +1,22 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>@ViewData["Title"] Baruch</title>
+    <link rel="stylesheet" href="~/css/site.css"/>
+    <link href="~/dist/baruch_app.css" rel="stylesheet"/>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"/>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
+    @await RenderSectionAsync( "head", false )
+</head>
+<body>
+
+<div>
+    @RenderBody()
+</div>
+
+@await RenderSectionAsync( "Scripts", false )
+</body>
+</html>
