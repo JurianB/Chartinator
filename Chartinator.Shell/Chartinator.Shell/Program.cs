@@ -1,4 +1,5 @@
 
+using Chartinator.Shell.Helper;
 using Chartinator.Shell.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,6 +10,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddTransient<ChartsService>();
+
+builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<DataHelper>();
 
 var app = builder.Build();
 

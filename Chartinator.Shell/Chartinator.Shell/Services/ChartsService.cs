@@ -11,9 +11,16 @@ namespace Chartinator.Shell.Services
 {
     public class ChartsService
     {
+        private readonly DataHelper _dataHelper;
+
+        public ChartsService(DataHelper dataHelper)
+        {
+            _dataHelper = dataHelper;
+        }
+
         public async Task<List<ExcelListInfo>> ReadExcelFilesNames()
         {
-            var data = await ExcelHelper.ReadExcelFileNames();
+            var data = await _dataHelper.ReadExcelFileNames();
 
             var result = new List<ExcelListInfo>();
 
@@ -36,7 +43,7 @@ namespace Chartinator.Shell.Services
 
             foreach (var file in files)
             {
-                var fileContents = await ExcelHelper.ReadExcels(file);
+                var fileContents = await _dataHelper.ReadData(file);
 
                 fileContents = fileContents.ToList();
 
