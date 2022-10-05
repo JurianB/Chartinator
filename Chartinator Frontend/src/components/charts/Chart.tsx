@@ -2,6 +2,7 @@ import { Box } from '@mui/material'
 import React from 'react'
 import { IChartDataInfo } from '../../core/interfaces/chart/IChartDataInfo'
 import ViewBox from '../controls/ViewBox'
+import zoomPlugin from 'chartjs-plugin-zoom';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -22,7 +23,8 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  zoomPlugin
 );
 
 interface IChart {
@@ -36,6 +38,20 @@ export default function Chart(props: IChart) {
 
   const options = {
     plugins: {
+      zoom: {
+        zoom: {
+          wheel: {
+            enabled: true // SET SCROOL ZOOM TO TRUE
+          },
+          mode: "xy",
+          speed: 100
+        },
+        pan: {
+          enabled: true,
+          mode: "xy",
+          speed: 100
+        }
+      },
       legend: {
         position: 'top' as const,
       },

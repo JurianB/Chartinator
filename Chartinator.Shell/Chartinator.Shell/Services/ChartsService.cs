@@ -39,7 +39,7 @@ namespace Chartinator.Shell.Services
             {
                 var fileContents = await ExcelHelper.ReadExcels(file);
 
-                fileContents = fileContents.Take(500).ToList();
+                fileContents = fileContents.ToList();
 
                 var xValues = fileContents.Select(x => x.X).ToList();
 
