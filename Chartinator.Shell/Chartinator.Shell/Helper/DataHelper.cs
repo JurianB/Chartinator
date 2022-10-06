@@ -62,7 +62,8 @@ namespace Chartinator.Shell.Helper
 
             var excelLines = excelData.Split("\n");
 
-            var dataPointsAsString = excelLines.Skip(3).ToList();
+            var dataPointsAsString = excelLines.Skip(500).ToList();
+            //var dataPointsAsString = excelLines.Skip(17487).ToList();
 
             foreach (var dataPointAsString in dataPointsAsString)
             {
@@ -76,14 +77,17 @@ namespace Chartinator.Shell.Helper
                 {
                     tempResult.X = float.Parse(lineSplitted[0], CultureInfo.InvariantCulture);
                     tempResult.Y = float.Parse(lineSplitted[1], CultureInfo.InvariantCulture);
-
-                    result.Add(tempResult);
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    
                 }
-                
+
+               
+
+                result.Add(tempResult);
+
+
             }
 
             _cache.Set($"{DataPointsCacheKeyPrefix}-{file.FileName}", result);

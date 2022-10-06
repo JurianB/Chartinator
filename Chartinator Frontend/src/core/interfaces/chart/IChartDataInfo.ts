@@ -1,12 +1,8 @@
-import { IChartDataSet } from "./IChartDataSet";
+import { IChartData } from "./IChartData";
 
 export interface IChartDataInfo {
     title: string;
-    labels: string[];
-    dataSets: IChartDataSet[];
-    XMin:number;
-    XMax:number;
-    YMin:number;
-    YMax:number;
-
+    data: IChartData[];
 }
+
+

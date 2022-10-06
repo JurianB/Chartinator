@@ -38,49 +38,38 @@ namespace Chartinator.Shell.Services
         public async Task<ChartDataInfo> ReadFiles(List<ExcelFileData> files)
         {
             var result = new ChartDataInfo();
-
-            var labels = new HashSet<float>();
-
+            
             foreach (var file in files)
             {
                 var fileContents = await _dataHelper.ReadData(file);
 
                 fileContents = fileContents.ToList();
 
-                var xValues = fileContents.Select(x => x.X).ToList();
+                var tempResult = new ChartData();
 
-                foreach (var xValue in xValues)
+                tempResult.Name = file.FileName;
+
+                foreach (var chartDataPoint in fileContents)
                 {
-                    labels.Add(xValue);
+                    tempResult.DataPoints.Add(new ChartDataPoint
+                    {
+                        X = chartDataPoint.X,
+                        Y = chartDataPoint.Y
+                    });
                 }
+
+                tempResult.Type = "line";
+                tempResult.AxisYType = "secondary";
+                tempResult.MarkerSize = 0;
+                tempResult.ShowInLegend = true;
                 
-                var dataSet = new ChartDataSet
-                {
-                    Label = file.FileName,
-                    BackgroundColor = GetRandomColor(),
-                    BorderColor = GetRandomColor()
-                };
+                tempResult.YValueFormatString = "";
 
-                foreach (var dataPoints in fileContents)
-                {
-                    dataSet.Data.Add(dataPoints.Y);
-                }
-
-                result.DataSets.Add(dataSet);
+                result.Data.Add(tempResult);
             }
+            
 
-            foreach (var label in labels)
-            {
-                result.Labels.Add(label);
-            }
-
-
-            result.Title += $"Based on {result.Labels.Count + result.DataSets.SelectMany(x => x.Data).Count()} scanned data points";
-
-            result.XMin = result.DataSets.SelectMany(x => x.Data).Min();
-            result.XMax = result.DataSets.SelectMany(x => x.Data).Max();
-            result.YMin = labels.Min();
-            result.YMax = labels.Max();
+            result.Title += $"Based on {result.Data.SelectMany(x => x.DataPoints).Count()} scanned data points";
 
             return result;
         }
