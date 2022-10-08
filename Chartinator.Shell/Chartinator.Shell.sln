@@ -5,6 +5,10 @@ VisualStudioVersion = 17.3.32825.248
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Chartinator.Shell", "Chartinator.Shell\Chartinator.Shell.csproj", "{1B8668F7-3553-4D8B-9261-3FDB30173CA5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chartinator.Service", "Chartinator.Service\Chartinator.Service.csproj", "{DF32A272-FC2D-4876-9A7C-8CC3DBDCBFBB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chartinator.Transfer", "Chartinator.Transfer\Chartinator.Transfer.csproj", "{52740721-0B52-4DFE-9060-B1951D156011}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{1B8668F7-3553-4D8B-9261-3FDB30173CA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1B8668F7-3553-4D8B-9261-3FDB30173CA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1B8668F7-3553-4D8B-9261-3FDB30173CA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF32A272-FC2D-4876-9A7C-8CC3DBDCBFBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF32A272-FC2D-4876-9A7C-8CC3DBDCBFBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF32A272-FC2D-4876-9A7C-8CC3DBDCBFBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF32A272-FC2D-4876-9A7C-8CC3DBDCBFBB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52740721-0B52-4DFE-9060-B1951D156011}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52740721-0B52-4DFE-9060-B1951D156011}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52740721-0B52-4DFE-9060-B1951D156011}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52740721-0B52-4DFE-9060-B1951D156011}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

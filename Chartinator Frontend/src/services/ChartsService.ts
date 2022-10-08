@@ -11,7 +11,7 @@ export default class ChartsService {
         this.context = context;
     }
 
-    async LoadExcelsAsync(codes: number[]) {
+    async LoadFolderStructureAsync(codes: number[]) {
         let api = `/api/charts/excel`;
         console.log('Exchange: ExcelsAsync');
 

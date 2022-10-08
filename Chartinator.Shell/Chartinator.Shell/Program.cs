@@ -1,6 +1,6 @@
 
-using Chartinator.Shell.Helper;
-using Chartinator.Shell.Services;
+using Chartinator.Service;
+using Chartinator.Service.Helper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -10,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddTransient<ChartsService>();
+builder.Services.AddTransient<DataStructureService>();
 
 builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<DataHelper>();

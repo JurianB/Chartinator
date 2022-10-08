@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using Chartinator.Shell.Controllers.Base;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using System.Threading;
 using System.Threading.Tasks;
+using Chartinator.Service;
 using Chartinator.Shell.Core;
 using Chartinator.Shell.Core.Request;
-using Chartinator.Shell.Core.Response;
-using Chartinator.Shell.Services;
 
 namespace Chartinator.Shell.Controllers
 {
@@ -21,29 +19,12 @@ namespace Chartinator.Shell.Controllers
             _chartsService = chartsService;
         }
 
-        [HttpGet("excel")]
-        public async Task<IActionResult> GetExcels()
+        [HttpGet]
+        public async Task<IActionResult> GetChartData([FromBody] List<ExcelFileData> files)
         {
             try
             {
-                var excels = await _chartsService.ReadExcelFilesNames();
-
-                return HandleResult(new OperationResult(HttpStatusCode.OK, excels));
-            }
-            catch (Exception e)
-            {
-                var errorInfo = new ErrorInfo("Failed to retrieve the excels.", $"{GetType().Name}::GetExcels", e);
-
-                return InternalServerError(errorInfo);
-            }
-        }
-
-        [HttpPost("execute")]
-        public async Task<IActionResult> ExecuteExcels([FromBody] List<ExcelFileData> files)
-        {
-            try
-            {
-                var data = await _chartsService.ReadFiles(files);
+                var data = await _chartsService.ReadData(files);
                
                 return HandleResult(new OperationResult(HttpStatusCode.OK, data));
             }
