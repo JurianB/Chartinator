@@ -8,7 +8,7 @@ import ScrollBox from '../components/controls/ScrollBox';
 import ListHeader from '../components/controls/ListHeader';
 import { IChartDataInfo } from '../core/interfaces/chart/IChartDataInfo';
 import Chart from '../components/charts/Chart';
-import DataStructure from '../components/lists/DataStructure';
+import DataStructure from '../components/datastructure/DataStructure';
 import { useDataStructureService } from '../services/DataStructureService';
 
 export default function HomePage() {

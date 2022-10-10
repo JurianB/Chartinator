@@ -54,7 +54,7 @@ public class ChartsService
     {
         var result = new ChartData();
 
-        var dataPoints = await _dataHelper.ReadData(filePath);
+        var dataPoints = await _dataHelper.ReadExcelData(filePath);
 
         result.DataPoints = dataPoints;
         result.Type = "line";
@@ -64,6 +64,14 @@ public class ChartsService
 
     private async Task<ChartData> ReadTextFileDataPoints(string filePath)
     {
-        throw new NotImplementedException();
+        using (var reader = new StreamReader(filePath))
+        {
+            var data = await reader.ReadToEndAsync();
+        }
+
+        return new ChartData
+        {
+            Type = "line"
+        };
     }
 }

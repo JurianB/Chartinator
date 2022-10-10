@@ -21,7 +21,7 @@ public class DataHelper
         _cache = cache;
     }
 
-    public async Task<List<ChartDataPoint>> ReadData(string filePath)
+    public async Task<List<ChartDataPoint>> ReadExcelData(string filePath)
     {
         _cache.TryGetValue(filePath, out List<ChartDataPoint> cacheData);
 
