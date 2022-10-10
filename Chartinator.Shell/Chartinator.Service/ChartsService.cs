@@ -1,89 +1,75 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Chartinator.Service.Helper;
-using Chartinator.Shell.Core.Request;
-using Chartinator.Shell.Core.Response;
+using Chartinator.Transfer.Response;
+using Chartinator.Transfer.Response.DataStructure;
 
-namespace Chartinator.Service
+namespace Chartinator.Service;
+
+public class ChartsService
 {
-    public class ChartsService
+    private readonly DataHelper _dataHelper;
+
+    public ChartsService(DataHelper dataHelper)
     {
-        private readonly DataHelper _dataHelper;
+        _dataHelper = dataHelper;
+    }
 
-        public ChartsService(DataHelper dataHelper)
+
+    public async Task<ChartDataInfo> ReadData(List<string> filePaths)
+    {
+        var result = new ChartDataInfo();
+
+        //C:\Users\Jurian\Desktop\Data\GCMS\HY007.CSV.xls
+        foreach (var filePath in filePaths)
         {
-            _dataHelper = dataHelper;
-        }
+            var fileInfo = new FileInfo(filePath);
 
-        public async Task<List<ExcelListInfo>> ReadExcelFilesNames()
-        {
-            var data = await _dataHelper.ReadExcelFileNames();
-
-            var result = new List<ExcelListInfo>();
-
-            foreach (var file in data)
+            result.Title += $"{fileInfo.Name} ";
+            switch (fileInfo.Extension)
             {
-                result.Add(new ExcelListInfo
-                {
-                    FileName = file
-                });
+                case ".xls":
+                    var excelChartData = await ReadExcelFileDataPoints(filePath, fileInfo.Name);
+                    result.Data.Add(excelChartData);
+                    break;
+                case ".txt":
+                    var textFileChartData = await ReadTextFileDataPoints(filePath);
+                    result.Data.Add(textFileChartData);
+                    break;
             }
-
-            return result;
         }
 
-        public async Task<ChartDataInfo> ReadData(List<ExcelFileData> files)
-        {
-            var result = new ChartDataInfo();
-            
-            foreach (var file in files)
-            {
-                var fileContents = await _dataHelper.ReadData(file);
 
-                fileContents = fileContents.ToList();
+        result.Title += $"Based on {result.Data.SelectMany(x => x.DataPoints).Count()} scanned data points";
 
-                var tempResult = new ChartData();
+        return result;
+    }
 
-                tempResult.Name = file.FileName;
 
-                foreach (var chartDataPoint in fileContents)
-                {
-                    tempResult.DataPoints.Add(new ChartDataPoint
-                    {
-                        X = chartDataPoint.X,
-                        Y = chartDataPoint.Y
-                    });
-                }
 
-                tempResult.Type = "line";
-                tempResult.AxisYType = "secondary";
-                tempResult.MarkerSize = 0;
-                tempResult.ShowInLegend = true;
-                
-                tempResult.YValueFormatString = "";
+    private async Task<ChartData> ReadExcelFileDataPoints(string filePath, string fileName)
+    {
+        var result = new ChartData();
 
-                result.Data.Add(tempResult);
-            }
-            
+        var dataPoints = await _dataHelper.ReadData(filePath);
 
-            result.Title += $"Based on {result.Data.SelectMany(x => x.DataPoints).Count()} scanned data points";
+        result.DataPoints = dataPoints;
+        result.Name = fileName;
+        result.Type = "line";
+        result.AxisYType = "secondary";
+        //result.MarkerSize = 0;
+        //result.ShowInLegend = true;
 
-            return result;
-        }
+        result.YValueFormatString = "";
 
-        private static string GetRandomColor()
-        {
-            var random = new Random();
+        return result;
+    }
 
-            var randomR = random.Next(0, 155);
-            var randomG = random.Next(0, 155);
-            var randomB = random.Next(0, 155);
-
-            var result = $"rgb({randomR},{randomG},{randomB})";
-
-            return result;
-        }
+    private async Task<ChartData> ReadTextFileDataPoints(string filePath)
+    {
+        throw new NotImplementedException();
     }
 }

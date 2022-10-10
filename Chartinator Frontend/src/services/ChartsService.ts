@@ -1,5 +1,4 @@
 import Exchange from '../core/Exchange';
-import { IExcelListInfo } from '../core/interfaces/system/excel/IExcelListInfo';
 import { IResponse } from '../core/interfaces/system/IResponse';
 import { IStateContext } from '../core/interfaces/system/IStateContext';
 import { useSession } from '../core/SessionProvider';
@@ -19,8 +18,8 @@ export default class ChartsService {
     }
 
     
-    async ExecuteExcelsAsync(body:IExcelListInfo[], codes: number[]) {
-        let api = `/api/charts/execute`;
+    async ExecuteExcelsAsync(body:string[], codes: number[]) {
+        let api = `/api/charts`;
         console.log('Exchange: ExecuteExcelsAsync');
 
         return (await Exchange.postApiData(this.context, api, body, codes)) as IResponse;

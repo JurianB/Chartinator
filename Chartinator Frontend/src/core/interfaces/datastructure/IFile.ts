@@ -1,5 +1,6 @@
 export interface IFile {
     name: string;
-    size: number;
+    size: string;
+    path: string;
     type: number;
 }

@@ -1,11 +1,10 @@
 import { Box, List, ListItemButton, Tooltip, Typography } from '@mui/material';
 import React from 'react'
 import { IDataStructureInfo } from '../../core/interfaces/datastructure/IDataStructureInfo'
-import { IFile } from '../../core/interfaces/datastructure/IFile';
 
 interface IDataStructure {
     data: IDataStructureInfo;
-    selectedFiles: IFile[];
+    selectedFiles: string[];
     onChange: (id: string) => void;
 }
 export default function DataStructure(props: IDataStructure) {
@@ -31,10 +30,10 @@ export default function DataStructure(props: IDataStructure) {
                             return (
                                 <Tooltip title={file.size} arrow placement='right'>
                                     <ListItemButton
-                                        key={file.name}
-                                        onClick={() => props.onChange(file.name)}
+                                        key={file.path}
+                                        onClick={() => props.onChange(file.path)}
                                         divider
-                                        selected={props.selectedFiles.findIndex(x => x.name === file.name) === -1 ? false : true}
+                                        selected={props.selectedFiles.findIndex(x => x === file.path) === -1 ? false : true}
                                         sx={{ height: 50 }}
                                     >
                                         <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', paddingLeft: 2 }}>

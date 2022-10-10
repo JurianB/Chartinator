@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Chartinator.Shell.Core.Response;
+namespace Chartinator.Transfer.Response;
 
 public class ChartData
 {
@@ -11,8 +11,6 @@ public class ChartData
     public string Type { get; set; }
     public string AxisYType { get; set; }
     public string Name { get; set; }
-    public bool ShowInLegend { get; set; }
-    public int MarkerSize { get; set; }
     public string YValueFormatString { get; set; }
     public List<ChartDataPoint> DataPoints { get; set; }
 }

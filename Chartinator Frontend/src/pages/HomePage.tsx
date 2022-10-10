@@ -4,18 +4,16 @@ import Page from '../components/layout/Page';
 import { IDataStructureInfo } from '../core/interfaces/datastructure/IDataStructureInfo';
 import WaitMessage from '../components/WaitMessage';
 import { useChartsService } from '../services/ChartsService';
-import ExcelList from '../components/lists/ExcelList';
 import ScrollBox from '../components/controls/ScrollBox';
 import ListHeader from '../components/controls/ListHeader';
 import { IChartDataInfo } from '../core/interfaces/chart/IChartDataInfo';
 import Chart from '../components/charts/Chart';
-import { IFile } from '../core/interfaces/datastructure/IFile';
 import DataStructure from '../components/lists/DataStructure';
 import { useDataStructureService } from '../services/DataStructureService';
 
 export default function HomePage() {
     const [dataStructure, setDataStructure] = useState<IDataStructureInfo>();
-    const [selectedFiles, setSelectedFiles] = useState<IFile[]>([]);
+    const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
     const [chartData, setChartData] = useState<IChartDataInfo>();
     const [loading, setLoading] = useState<boolean>(true);
     const chartsService = useChartsService();
@@ -34,28 +32,29 @@ export default function HomePage() {
             .catch();
     }
 
-    const handleFileChange = (name: string) => {
-        // if (dataStructure === undefined) {
-        //     return;
-        // }
+    const handleFileChange = (filePath: string) => {
+        console.log('clicked on file:' + filePath)
+        if (dataStructure === undefined) {
+            return;
+        }
 
-        // const findIndex = selectedFiles.findIndex(x => x.name === name);
+        const selected = selectedFiles;
+        
 
-        // if (findIndex === -1) {
-        //     const fileIndex = dataStructure?.folders.map(folder => folder.files).findIndex(x => x.name === name);
+        const findIndex = selectedFiles.findIndex(x => x === filePath);
 
-        //     setSelectedFiles([...selectedFiles, dataStructure[fileIndex]])
+        if (findIndex === -1) {
+            selected.push(filePath);
+        }
+        else {
+            const fileToRemoveIndex = selectedFiles.findIndex(x => x === filePath);
 
-        //     return;
-        // } else {
-        //     const excelToRemoveIndex = selectedFiles.findIndex(x => x.fileName === name);
+            selected.splice(fileToRemoveIndex, 1);
+        }
 
-        //     const temp = [...selectedFiles];
+        setSelectedFiles([...selected]);
 
-        //     temp.splice(excelToRemoveIndex, 1);
-
-        //     setSelectedFiles(temp);
-        // }
+        console.log(selectedFiles);
     }
 
     const onExecuteClicked = () => {
@@ -89,7 +88,7 @@ export default function HomePage() {
                         <ScrollBox width={300} heightCorrection={180}>
 
                             {dataStructure !== undefined && (
-                                <DataStructure data={dataStructure} selectedFiles={selectedFiles} onChange={(id) => handleFileChange(id)}/>
+                                <DataStructure data={dataStructure} selectedFiles={selectedFiles} onChange={(id) => handleFileChange(id)} />
                             )}
 
                             <Button

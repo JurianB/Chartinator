@@ -6,7 +6,6 @@ using System.Net;
 using System.Threading.Tasks;
 using Chartinator.Service;
 using Chartinator.Shell.Core;
-using Chartinator.Shell.Core.Request;
 
 namespace Chartinator.Shell.Controllers
 {
@@ -19,12 +18,12 @@ namespace Chartinator.Shell.Controllers
             _chartsService = chartsService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetChartData([FromBody] List<ExcelFileData> files)
+        [HttpPost]
+        public async Task<IActionResult> GetChartData([FromBody] List<string> filePaths)
         {
             try
             {
-                var data = await _chartsService.ReadData(files);
+                var data = await _chartsService.ReadData(filePaths);
                
                 return HandleResult(new OperationResult(HttpStatusCode.OK, data));
             }

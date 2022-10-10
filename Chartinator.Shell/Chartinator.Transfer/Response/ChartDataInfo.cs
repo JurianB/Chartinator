@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Chartinator.Shell.Core.Response
+namespace Chartinator.Transfer.Response
 {
     public class ChartDataInfo
     {

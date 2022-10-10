@@ -1,8 +1,9 @@
 ﻿namespace Chartinator.Transfer.Response.DataStructure;
 
-public class File
+public class DataFile
 {
     public string Name { get; set; }
-    public int Size { get; set; }
+    public string Path { get; set; }
+    public string Size { get; set; }
     public FileType Type { get; set; }
 }

@@ -1,59 +1,70 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Chartinator.Transfer.Response.DataStructure;
+using Microsoft.Extensions.Caching.Memory;
 
-namespace Chartinator.Service
+namespace Chartinator.Service;
+
+public class DataStructureService
 {
-    public class DataStructureService
-    {
-        public async Task<DataStructureInfo> GetDataStructure()
-        {
-            var result = new DataStructureInfo();
+    private static readonly string Desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+    private static readonly string DataFolder = Path.Combine(Desktop, "Data");
+    private static readonly string DataPointsCacheKeyPrefix = "DataPointsCacheKeyPrefix";
+    private readonly IMemoryCache _cache;
 
-            result.FileCount = 13;
-            result.Folders = new List<Folder>
+    public DataStructureService(IMemoryCache cache)
+    {
+        _cache = cache;
+    }
+
+
+    public async Task<DataStructureInfo> GetDataStructure()
+    {
+        var result = new DataStructureInfo();
+
+        var folders = Directory.GetDirectories(DataFolder);
+
+        foreach (var folder in folders)
+        {
+            var tempFolder = new Folder
             {
-                new()
-                {
-                    Name = "Folder 1",
-                    Files = new List<File>
-                    {
-                        new()
-                        {
-                            Type = FileType.CSV,
-                            Name = "File 1",
-                            Size = 13
-                        },
-                        new()
-                        {
-                            Type = FileType.Txt,
-                            Name = "File 2",
-                            Size = 13
-                        },
-                    }
-                },
-                new()
-                {
-                    Name = "Folder 2",
-                    Files = new List<File>
-                    {
-                        new()
-                        {
-                            Type = FileType.CSV,
-                            Name = "File 3",
-                            Size = 13
-                        },
-                        new()
-                        {
-                            Type = FileType.Txt,
-                            Name = "File 4",
-                            Size = 13
-                        },
-                    }
-                },
+                Name = folder
             };
 
-            return result;
+            var files = Directory.GetFiles(Path.Combine(DataFolder, tempFolder.Name));
+
+            foreach (var filePath in files)
+            {
+                var fileName = Path.GetFileNameWithoutExtension(filePath);
+                var fileInfo = new FileInfo(filePath);
+
+                tempFolder.Files.Add(new DataFile
+                {
+                    Name = fileName,
+                    Path = filePath,
+                    Type = GetFileExtension(fileInfo),
+                    Size = $"{fileInfo.Length / 1024} KB"
+                });
+            }
+
+            result.Folders.Add(tempFolder);
+        }
+
+        return result;
+    }
+
+    private static FileType GetFileExtension(FileInfo fileInfo)
+    {
+        switch (fileInfo.Extension)
+        {
+            case ".xls":
+                return FileType.CSV;
+            case ".txt":
+                return FileType.Txt;
+            default:
+                return FileType.Unknown;
         }
     }
 }
