@@ -9,17 +9,18 @@ interface IChart {
 }
 export default function Chart(props: IChart) {
   const options = {
-    theme: "light2", // "light1", "dark1", "dark2"
-    animationEnabled: true,
-    zoomEnabled: true,
-    title: {
-      text: props.data.title,
-      fontSize: 24,
-      padding:{
-        top: 20
-      }
+    backgroundColor: "transparent",
+    axisX:{
+      lineThickness: 0,
+      tickThickness: 0
     },
-    data: props.data.data,
+    axisY:{
+      lineThickness: 0,
+      gridThickness: 0,
+      tickLength: 0
+    },
+    data:props.data.data,
+    zoomEnabled: true,
     height: 600
   }
 

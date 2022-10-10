@@ -22,7 +22,7 @@ public class ChartsService
     public async Task<ChartDataInfo> ReadData(List<string> filePaths)
     {
         var result = new ChartDataInfo();
-
+        
         //C:\Users\Jurian\Desktop\Data\GCMS\HY007.CSV.xls
         foreach (var filePath in filePaths)
         {
@@ -32,7 +32,7 @@ public class ChartsService
             switch (fileInfo.Extension)
             {
                 case ".xls":
-                    var excelChartData = await ReadExcelFileDataPoints(filePath, fileInfo.Name);
+                    var excelChartData = await ReadExcelFileDataPoints(filePath);
                     result.Data.Add(excelChartData);
                     break;
                 case ".txt":
@@ -50,20 +50,14 @@ public class ChartsService
 
 
 
-    private async Task<ChartData> ReadExcelFileDataPoints(string filePath, string fileName)
+    private async Task<ChartData> ReadExcelFileDataPoints(string filePath)
     {
         var result = new ChartData();
 
         var dataPoints = await _dataHelper.ReadData(filePath);
 
         result.DataPoints = dataPoints;
-        result.Name = fileName;
         result.Type = "line";
-        result.AxisYType = "secondary";
-        //result.MarkerSize = 0;
-        //result.ShowInLegend = true;
-
-        result.YValueFormatString = "";
 
         return result;
     }

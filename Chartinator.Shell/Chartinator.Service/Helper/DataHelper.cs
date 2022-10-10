@@ -39,7 +39,7 @@ public class DataHelper
 
         var excelLines = filePath.Split("\n");
 
-        var dataPointsAsString = excelLines.Skip(500).ToList();
+        var dataPointsAsString = excelLines.Skip(17488).ToList();
 
         foreach (var dataPointAsString in dataPointsAsString)
         {

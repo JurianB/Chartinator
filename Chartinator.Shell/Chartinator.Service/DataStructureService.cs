@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Chartinator.Transfer.Response.DataStructure;
 using Microsoft.Extensions.Caching.Memory;
@@ -11,15 +12,7 @@ public class DataStructureService
 {
     private static readonly string Desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
     private static readonly string DataFolder = Path.Combine(Desktop, "Data");
-    private static readonly string DataPointsCacheKeyPrefix = "DataPointsCacheKeyPrefix";
-    private readonly IMemoryCache _cache;
-
-    public DataStructureService(IMemoryCache cache)
-    {
-        _cache = cache;
-    }
-
-
+    
     public async Task<DataStructureInfo> GetDataStructure()
     {
         var result = new DataStructureInfo();
@@ -28,12 +21,9 @@ public class DataStructureService
 
         foreach (var folder in folders)
         {
-            var tempFolder = new Folder
-            {
-                Name = folder
-            };
+            var tempFolder = new Folder();
 
-            var files = Directory.GetFiles(Path.Combine(DataFolder, tempFolder.Name));
+            var files = Directory.GetFiles(folder);
 
             foreach (var filePath in files)
             {
@@ -48,6 +38,8 @@ public class DataStructureService
                     Size = $"{fileInfo.Length / 1024} KB"
                 });
             }
+
+            tempFolder.Name = folder.Split("\\").LastOrDefault() + $" ({tempFolder.Files.Count})";
 
             result.Folders.Add(tempFolder);
         }
