@@ -33,7 +33,6 @@ export default function HomePage() {
     }
 
     const handleFileChange = (filePath: string) => {
-        console.log('clicked on file:' + filePath)
         if (dataStructure === undefined) {
             return;
         }
@@ -53,8 +52,6 @@ export default function HomePage() {
         }
 
         setSelectedFiles([...selected]);
-
-        console.log(selectedFiles);
     }
 
     const onExecuteClicked = () => {

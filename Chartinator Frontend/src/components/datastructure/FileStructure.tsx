@@ -1,5 +1,5 @@
-import { ListItemButton, Tooltip, Typography } from '@mui/material'
-import React from 'react'
+import { Collapse, ListItemButton, ListItemText, Tooltip, Typography } from '@mui/material'
+import React, { ReactElement } from 'react'
 import { IFile } from '../../core/interfaces/datastructure/IFile';
 
 interface IFileStructure {
@@ -8,18 +8,38 @@ interface IFileStructure {
     onChange: (id: string) => void;
 }
 export default function FileStructure(props: IFileStructure) {
+    const [open, setOpen] = React.useState(false);
+
+    const handleClick = () => {
+        setOpen(!open);
+        props.onChange(props.file.path);
+    };
+
+    const getOptions = () => {
+        const script:ReactElement[] = [];
+
+        switch(props.file.type){
+            case 1:
+                script.push(<div>options</div>);
+                break;
+            case 2:
+                script.push(<div>options</div>);
+        }
+
+        return script;
+    }
+
     return (
-        <Tooltip title={props.file.size} arrow placement='right'>
+        <>
             <ListItemButton
-                sx={{ pl: 4, height: 50 }}
-                onClick={() => props.onChange(props.file.path)}
-                selected={props.selectedFiles.findIndex(x => x === props.file.path) === -1 ? false : true}>
-
-                <Typography variant='body2' color='#11111' noWrap>
-                    {props.file.name}
-                </Typography>
-
+                onClick={handleClick}
+                selected={props.selectedFiles.findIndex(x => x === props.file.path) === -1 ? false : true}
+            >
+                <ListItemText primary={props.file.name} />
             </ListItemButton>
-        </Tooltip>
+            <Collapse in={open} timeout="auto">
+                {getOptions()}
+            </Collapse>
+        </>
     )
 }

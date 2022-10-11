@@ -23,7 +23,6 @@ public class ChartsService
     {
         var result = new ChartDataInfo();
         
-        //C:\Users\Jurian\Desktop\Data\GCMS\HY007.CSV.xls
         foreach (var filePath in filePaths)
         {
             var fileInfo = new FileInfo(filePath);

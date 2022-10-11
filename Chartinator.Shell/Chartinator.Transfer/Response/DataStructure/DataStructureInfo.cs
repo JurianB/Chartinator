@@ -8,8 +8,6 @@ namespace Chartinator.Transfer.Response.DataStructure
         {
             Folders = new List<Folder>();
         }
-
-        public int FileCount { get; set; }
         public List<Folder> Folders { get; set; }
     }
 }
