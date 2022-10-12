@@ -21,7 +21,7 @@ export default function Chart(props: IChart) {
     },
     data:props.data.data,
     zoomEnabled: true,
-    height: 800
+    height: 700
   }
 
   return (

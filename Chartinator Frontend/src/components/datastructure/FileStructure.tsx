@@ -1,6 +1,8 @@
 import { Collapse, ListItemButton, ListItemText, Tooltip, Typography } from '@mui/material'
 import React, { ReactElement } from 'react'
 import { IFile } from '../../core/interfaces/datastructure/IFile';
+import ExcelFileSettings from './ExcelFileSettings';
+import TextFileSettings from './TextFileSettings';
 
 interface IFileStructure {
     file: IFile,
@@ -20,10 +22,10 @@ export default function FileStructure(props: IFileStructure) {
 
         switch(props.file.type){
             case 1:
-                script.push(<div>options</div>);
+                script.push(<ExcelFileSettings />);
                 break;
             case 2:
-                script.push(<div>options</div>);
+                script.push(<TextFileSettings />);
         }
 
         return script;
