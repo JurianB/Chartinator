@@ -15,7 +15,7 @@ export default function DataStructure(props: IDataStructure) {
         <List sx={{ flexGrow: 1, maxHeight: 'calc(100vh - 200px)', overflow: 'auto' }} disablePadding>
             {props.data.folders.map((folder) => {
                 return (
-                   <FolderStructure folder={folder} onChange={props.onChange} selectedFiles={props.selectedFiles}/>
+                   <FolderStructure key={folder.name} folder={folder} onChange={props.onChange} selectedFiles={props.selectedFiles}/>
                 
                 );
             })}

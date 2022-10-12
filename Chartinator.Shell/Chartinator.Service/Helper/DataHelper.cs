@@ -14,30 +14,25 @@ public class DataHelper
     private static readonly string Desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
     private static readonly string DataFolder = Path.Combine(Desktop, "Data");
     private static readonly string DataPointsCacheKeyPrefix = "DataPointsCacheKeyPrefix";
-    private readonly IMemoryCache _cache;
 
-    public DataHelper(IMemoryCache cache)
+    
+    public async Task<string> ReadRawData(string filePath)
     {
-        _cache = cache;
-    }
+        var data = string.Empty;
 
-    public async Task<List<ChartDataPoint>> ReadExcelData(string filePath)
-    {
-        _cache.TryGetValue(filePath, out List<ChartDataPoint> cacheData);
-
-        if (cacheData != null)
-        {
-            return cacheData;
-        }
-
-        var result = new List<ChartDataPoint>();
-        
         using (var reader = new StreamReader(filePath))
         {
-            filePath = await reader.ReadToEndAsync();
+            data = await reader.ReadToEndAsync();
         }
 
-        var excelLines = filePath.Split("\n");
+        return data;
+    }
+
+    public async Task<List<ChartDataPoint>> ParseExcelData(string rawData)
+    {
+        var result = new List<ChartDataPoint>();
+        
+       var excelLines = rawData.Split("\n");
 
         var dataPointsAsString = excelLines.Skip(17488).ToList();
 
@@ -61,9 +56,7 @@ public class DataHelper
 
             result.Add(tempResult);
         }
-
-        _cache.Set(filePath, result);
-
+        
         return result;
     }
 }

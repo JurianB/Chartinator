@@ -22,10 +22,10 @@ export default function FileStructure(props: IFileStructure) {
 
         switch(props.file.type){
             case 1:
-                script.push(<ExcelFileSettings />);
+                script.push(<ExcelFileSettings key='excel' />);
                 break;
             case 2:
-                script.push(<TextFileSettings />);
+                script.push(<TextFileSettings key='text' />);
         }
 
         return script;

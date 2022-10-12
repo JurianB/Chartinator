@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Chartinator.Service.Helper;
 using Chartinator.Transfer.Response;
 using Chartinator.Transfer.Response.DataStructure;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Chartinator.Service;
 
@@ -22,7 +24,7 @@ public class ChartsService
     public async Task<ChartDataInfo> ReadData(List<string> filePaths)
     {
         var result = new ChartDataInfo();
-        
+
         foreach (var filePath in filePaths)
         {
             var fileInfo = new FileInfo(filePath);
@@ -53,7 +55,9 @@ public class ChartsService
     {
         var result = new ChartData();
 
-        var dataPoints = await _dataHelper.ReadExcelData(filePath);
+        var rawData = await _dataHelper.ReadRawData(filePath);
+
+        var dataPoints = await _dataHelper.ParseExcelData(rawData);
 
         result.DataPoints = dataPoints;
         result.Type = "line";
@@ -63,14 +67,44 @@ public class ChartsService
 
     private async Task<ChartData> ReadTextFileDataPoints(string filePath)
     {
-        using (var reader = new StreamReader(filePath))
+        var rawData = await _dataHelper.ReadRawData(filePath);
+
+        var dataLines = rawData.Split("\n").ToList();
+
+        dataLines = dataLines.Skip(49).ToList();
+        dataLines.RemoveAt(dataLines.Count -1);
+
+        var xDataPoint = 0;
+
+        var molarMassDataPoints = new List<ChartDataPoint>();
+        foreach (var dataLine in dataLines)
         {
-            var data = await reader.ReadToEndAsync();
+            var dataLineValues = dataLine.Split("\t");
+            try
+            {
+                var molarMassValue = dataLineValues[2].TrimStart().TrimEnd();
+
+                var yDataPoint = long.Parse(molarMassValue, NumberStyles.Any);
+                xDataPoint++;
+
+                molarMassDataPoints.Add(new ChartDataPoint
+                {
+                    X = xDataPoint,
+                    Y = yDataPoint
+                });
+            }
+            catch (Exception e)
+            {
+            }
         }
 
-        return new ChartData
+
+        var result = new ChartData
         {
-            Type = "line"
+            Type = "line",
+            DataPoints = molarMassDataPoints
         };
+
+        return result;
     }
 }
