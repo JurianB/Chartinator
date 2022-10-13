@@ -30,13 +30,31 @@ public class DataStructureService
                 var fileName = Path.GetFileNameWithoutExtension(filePath);
                 var fileInfo = new FileInfo(filePath);
 
-                tempFolder.Files.Add(new DataFile
+                var dataFile = new DataFile
                 {
                     Name = fileName,
                     Path = filePath,
-                    Type = GetFileExtension(fileInfo),
-                    Size = $"{fileInfo.Length / 1024} KB"
-                });
+                    Type = GetFileExtension(fileInfo)
+                };
+
+                if (filePath.Contains("GCMS"))
+                {
+                    dataFile.Options.Add(new DataFileOptions
+                    {
+                        Id = $"{filePath}",
+                        Type = DataFileOptionsType.Checkbox,
+                        Label = "Section 1",
+                    });
+
+                    dataFile.Options.Add(new DataFileOptions
+                    {
+                        Id = filePath,
+                        Type = DataFileOptionsType.Checkbox,
+                        Label = "Section 2",
+                    });
+                }
+
+                tempFolder.Files.Add(dataFile);
             }
 
             tempFolder.Name = folder.Split("\\").LastOrDefault() + $" ({tempFolder.Files.Count})";

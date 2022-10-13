@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Chartinator.Service.Helper;
+using Chartinator.Transfer.Request;
 using Chartinator.Transfer.Response;
 using Chartinator.Transfer.Response.DataStructure;
 using Microsoft.Extensions.Caching.Memory;
@@ -21,23 +22,23 @@ public class ChartsService
     }
 
 
-    public async Task<ChartDataInfo> ReadData(List<string> filePaths)
+    public async Task<ChartDataInfo> ReadData(List<SelectedFileData> files)
     {
         var result = new ChartDataInfo();
 
-        foreach (var filePath in filePaths)
+        foreach (var file in files)
         {
-            var fileInfo = new FileInfo(filePath);
+            var fileInfo = new FileInfo(file.FilePath);
 
             result.Title += $"{fileInfo.Name} ";
             switch (fileInfo.Extension)
             {
                 case ".xls":
-                    var excelChartData = await ReadExcelFileDataPoints(filePath);
+                    var excelChartData = await ReadExcelFileDataPoints(file);
                     result.Data.Add(excelChartData);
                     break;
                 case ".txt":
-                    var textFileChartData = await ReadTextFileDataPoints(filePath);
+                    var textFileChartData = await ReadTextFileDataPoints(file);
                     result.Data.Add(textFileChartData);
                     break;
             }
@@ -51,11 +52,11 @@ public class ChartsService
 
 
 
-    private async Task<ChartData> ReadExcelFileDataPoints(string filePath)
+    private async Task<ChartData> ReadExcelFileDataPoints(SelectedFileData file)
     {
         var result = new ChartData();
 
-        var rawData = await _dataHelper.ReadRawData(filePath);
+        var rawData = await _dataHelper.ReadRawData(file.FilePath);
 
         var dataPoints = await _dataHelper.ParseExcelData(rawData);
 
@@ -65,9 +66,9 @@ public class ChartsService
         return result;
     }
 
-    private async Task<ChartData> ReadTextFileDataPoints(string filePath)
+    private async Task<ChartData> ReadTextFileDataPoints(SelectedFileData file)
     {
-        var rawData = await _dataHelper.ReadRawData(filePath);
+        var rawData = await _dataHelper.ReadRawData(file.FilePath);
 
         var dataLines = rawData.Split("\n").ToList();
 

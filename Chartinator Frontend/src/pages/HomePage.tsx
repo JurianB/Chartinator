@@ -10,10 +10,13 @@ import { IChartDataInfo } from '../core/interfaces/chart/IChartDataInfo';
 import Chart from '../components/charts/Chart';
 import DataStructure from '../components/datastructure/DataStructure';
 import { useDataStructureService } from '../services/DataStructureService';
+import { ISelectedFile as ISelectedFile } from '../core/interfaces/datastructure/ISelectedFile';
+import { ISelectedFileOptions } from '../core/interfaces/datastructure/ISelectedFileOption';
+import { getValue } from '@mui/system';
 
 export default function HomePage() {
     const [dataStructure, setDataStructure] = useState<IDataStructureInfo>();
-    const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
+    const [selectedFiles, setSelectedFiles] = useState<ISelectedFile[]>([]);
     const [chartData, setChartData] = useState<IChartDataInfo>();
     const [loading, setLoading] = useState<boolean>(true);
     const chartsService = useChartsService();
@@ -38,19 +41,48 @@ export default function HomePage() {
         }
 
         const selected = selectedFiles;
-        
-
-        const findIndex = selectedFiles.findIndex(x => x === filePath);
+        const findIndex = selectedFiles.findIndex(x => x.filePath === filePath);
 
         if (findIndex === -1) {
-            selected.push(filePath);
+            const selection: ISelectedFile = {
+                filePath: filePath,
+                options: []
+            }
+
+            selected.push(selection);
+
+            console.log(selected);
         }
         else {
-            const fileToRemoveIndex = selectedFiles.findIndex(x => x === filePath);
+            const fileToRemoveIndex = selectedFiles.findIndex(x => x.filePath === filePath);
 
             selected.splice(fileToRemoveIndex, 1);
         }
 
+        setSelectedFiles([...selected]);
+    }
+
+    const onFileOptionChanged = (filePath: string, label: string, value: boolean) => {
+        const selected = selectedFiles;
+        const findIndex = selectedFiles.findIndex(x => x.filePath === filePath);
+
+        const selectedFile = selected[findIndex];
+
+        const optionsIndex = selectedFile.options.findIndex(x => x.label === label);
+
+        if (optionsIndex === -1){
+            const option:ISelectedFileOptions = {
+                label: label,
+                value: value,
+            }
+
+            selectedFile.options.push(option);
+        } else {
+            const optionToRemoveIndex = selectedFile.options.findIndex(x => x.label === label);
+
+            selectedFile.options.splice(optionToRemoveIndex, 1);
+        }
+        
         setSelectedFiles([...selected]);
     }
 
@@ -85,7 +117,10 @@ export default function HomePage() {
                         <ScrollBox width={300} heightCorrection={180}>
 
                             {dataStructure !== undefined && (
-                                <DataStructure data={dataStructure} selectedFiles={selectedFiles} onChange={(id) => handleFileChange(id)} />
+                                <DataStructure data={dataStructure}
+                                    selectedFiles={selectedFiles}
+                                    onFileClicked={(filePath) => handleFileChange(filePath)}
+                                    onFileOptionChanged={(filePath, label, value) => onFileOptionChanged(filePath, label, value)} />
                             )}
 
                             <Button

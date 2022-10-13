@@ -1,46 +1,41 @@
-import { Collapse, ListItemButton, ListItemText, Tooltip, Typography } from '@mui/material'
+import { Collapse, FormGroup, ListItemButton, ListItemText, Tooltip, Typography } from '@mui/material'
 import React, { ReactElement } from 'react'
 import { IFile } from '../../core/interfaces/datastructure/IFile';
-import ExcelFileSettings from './ExcelFileSettings';
-import TextFileSettings from './TextFileSettings';
+import { ISelectedFile } from '../../core/interfaces/datastructure/ISelectedFile';
+import FileSettings from './FileSettings';
 
 interface IFileStructure {
     file: IFile,
-    selectedFiles: string[];
-    onChange: (id: string) => void;
+    selectedFiles: ISelectedFile[];
+    onFileClicked: (filePath: string) => void;
+    onFileOptionChanged: (filePath: string, label: string, checked: boolean) => void;
 }
 export default function FileStructure(props: IFileStructure) {
     const [open, setOpen] = React.useState(false);
 
     const handleClick = () => {
         setOpen(!open);
-        props.onChange(props.file.path);
+        props.onFileClicked(props.file.path);
     };
 
-    const getOptions = () => {
-        const script:ReactElement[] = [];
-
-        switch(props.file.type){
-            case 1:
-                script.push(<ExcelFileSettings key='excel' />);
-                break;
-            case 2:
-                script.push(<TextFileSettings key='text' />);
-        }
-
-        return script;
+    const onFileOptionChanged = (filePath: string, label: string, checked: boolean) => {
+        props.onFileOptionChanged(filePath, label, checked);
     }
 
     return (
         <>
             <ListItemButton
                 onClick={handleClick}
-                selected={props.selectedFiles.findIndex(x => x === props.file.path) === -1 ? false : true}
+                selected={props.selectedFiles.findIndex(x => x.filePath === props.file.path) === -1 ? false : true}
             >
                 <ListItemText primary={props.file.name} />
             </ListItemButton>
             <Collapse in={open} timeout="auto">
-                {getOptions()}
+                <FormGroup row sx={{ paddingLeft: 2 }}>
+                    {props.file.options.map(option => {
+                        return <FileSettings key={`${option.id}-${option.label}`} option={option} onChange={(filePath, label, value) => onFileOptionChanged(filePath, label, value)} />
+                    })}
+                </FormGroup>
             </Collapse>
         </>
     )
