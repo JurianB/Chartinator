@@ -58,7 +58,7 @@ public class ChartsService
 
         var rawData = await _dataHelper.ReadRawData(file.FilePath);
 
-        var dataPoints = await _dataHelper.ParseExcelData(rawData);
+        var dataPoints = await _dataHelper.ParseExcelData(rawData, file.Options);
 
         result.DataPoints = dataPoints;
         result.Type = "line";
