@@ -93,7 +93,7 @@ public class ChartsService
                     Y = yDataPoint
                 });
             }
-            catch (Exception e)
+            catch
             {
             }
         }
