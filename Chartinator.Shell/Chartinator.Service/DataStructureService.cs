@@ -54,6 +54,30 @@ public class DataStructureService
                     });
                 }
 
+                if (filePath.Contains("GPC"))
+                {
+                    dataFile.Options.Add(new DataFileOptions
+                    {
+                        Id = $"{filePath}",
+                        Type = DataFileOptionsType.Checkbox,
+                        Label = "Molar mass",
+                    });
+
+                    dataFile.Options.Add(new DataFileOptions
+                    {
+                        Id = filePath,
+                        Type = DataFileOptionsType.Checkbox,
+                        Label = "rid1A/MMD",
+                    });
+
+                    dataFile.Options.Add(new DataFileOptions
+                    {
+                        Id = filePath,
+                        Type = DataFileOptionsType.Checkbox,
+                        Label = "vwd1A/MMD",
+                    });
+                }
+
                 tempFolder.Files.Add(dataFile);
             }
 
