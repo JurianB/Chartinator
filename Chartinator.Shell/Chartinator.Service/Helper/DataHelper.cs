@@ -30,7 +30,7 @@ public class DataHelper
         return data;
     }
 
-    public async Task<List<ChartDataPoint>> ParseExcelData(string rawData, List<SelectedFileOption> fileOptions)
+    public async Task<List<ChartDataPoint>> ParseExcelData(string rawData, IEnumerable<SelectedFileOption> fileOptions)
     {
         var result = new List<ChartDataPoint>();
 
@@ -38,7 +38,7 @@ public class DataHelper
         
         var selectedSections = fileOptions.Select(x => x.Label).ToList();
 
-        var dataPointsAsString = new List<string>();
+        List<string> dataPointsAsString;
         if (selectedSections.Contains("Section 1") && selectedSections.Count == 1)
         {
             dataPointsAsString = excelLines.Skip(0).Take(17488).ToList();
@@ -65,12 +65,42 @@ public class DataHelper
                 tempResult.X = float.Parse(lineSplitted[0], CultureInfo.InvariantCulture);
                 tempResult.Y = float.Parse(lineSplitted[1], CultureInfo.InvariantCulture);
             }
-            catch (Exception e)
+            catch
             {
 
             }
 
             result.Add(tempResult);
+        }
+
+        return result;
+    }
+
+    public List<ulong> ParseTextFileData(IEnumerable<string> dataLines, int index)
+    {
+        var result = new List<ulong>();
+
+        foreach (var dataLine in dataLines)
+        {
+            var dataLineValues = dataLine.Split("\t");
+            try
+            {
+                var molarMassValue = dataLineValues[index].TrimStart().TrimEnd();
+
+                try
+                {
+                    var dataPoint = ulong.Parse(molarMassValue, NumberStyles.Any);
+
+                    result.Add(dataPoint);
+                }
+                catch
+                {
+                }
+            }
+            catch
+            {
+                // ignored
+            }
         }
 
         return result;

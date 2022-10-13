@@ -39,7 +39,7 @@ public class ChartsService
                     break;
                 case ".txt":
                     var textFileChartData = await ReadTextFileDataPoints(file);
-                    result.Data.Add(textFileChartData);
+                    result.Data.AddRange(textFileChartData);
                     break;
             }
         }
@@ -66,8 +66,10 @@ public class ChartsService
         return result;
     }
 
-    private async Task<ChartData> ReadTextFileDataPoints(SelectedFileData file)
+    private async Task<List<ChartData>> ReadTextFileDataPoints(SelectedFileData file)
     {
+        var result = new List<ChartData>();
+
         var rawData = await _dataHelper.ReadRawData(file.FilePath);
 
         var dataLines = rawData.Split("\n").ToList();
@@ -75,36 +77,71 @@ public class ChartsService
         dataLines = dataLines.Skip(49).ToList();
         dataLines.RemoveAt(dataLines.Count -1);
 
-        var xDataPoint = 0;
+        var dataPoints = new List<ChartDataPoint>();
 
-        var molarMassDataPoints = new List<ChartDataPoint>();
-        foreach (var dataLine in dataLines)
+        var molarMassDataPoints = _dataHelper.ParseTextFileData(dataLines, 2);
+
+        var selectedCheckboxes = file.Options.Select(x => x.Label).ToList();
+
+        foreach (var label in selectedCheckboxes)
         {
-            var dataLineValues = dataLine.Split("\t");
-            try
+            List<ulong> data;
+            if (label.Equals("rid1A/MMD"))
             {
-                var molarMassValue = dataLineValues[2].TrimStart().TrimEnd();
-
-                var yDataPoint = long.Parse(molarMassValue, NumberStyles.Any);
-                xDataPoint++;
-
-                molarMassDataPoints.Add(new ChartDataPoint
+                var tempResult = new ChartData
                 {
-                    X = xDataPoint,
-                    Y = yDataPoint
-                });
+                    Type = "line"
+                };
+
+                data = _dataHelper.ParseTextFileData(dataLines, 5);
+
+                var tempChartDataPoints = new List<ChartDataPoint>();
+
+                foreach (var molarMassDataPoint in molarMassDataPoints.Select((value, index) => new { i = index, value }))
+                {
+                    var correspondingRidPoint = data[molarMassDataPoint.i];
+
+                    tempChartDataPoints.Add(new ChartDataPoint
+                    {
+                        X = molarMassDataPoint.value,
+                        Y = correspondingRidPoint
+                    });
+                }
+
+                tempResult.DataPoints = tempChartDataPoints;
+
+                result.Add(tempResult);
             }
-            catch
+
+            if (label.Equals("vwd1A/MMD"))
             {
+                var tempResult = new ChartData
+                {
+                    Type = "line"
+                };
+
+                data = _dataHelper.ParseTextFileData(dataLines, 8);
+
+                var tempChartDataPoints = new List<ChartDataPoint>();
+
+                foreach (var molarMassDataPoint in molarMassDataPoints.Select((value, index) => new { i = index, value }))
+                {
+                    var correspondingRidPoint = data[molarMassDataPoint.i];
+
+                    tempChartDataPoints.Add(new ChartDataPoint
+                    {
+                        X = molarMassDataPoint.value,
+                        Y = correspondingRidPoint
+                    });
+                }
+
+                tempResult.DataPoints = tempChartDataPoints;
+
+                result.Add(tempResult);
             }
+
+
         }
-
-
-        var result = new ChartData
-        {
-            Type = "line",
-            DataPoints = molarMassDataPoints
-        };
 
         return result;
     }
