@@ -4,20 +4,13 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Chartinator.Transfer.Request;
 using Chartinator.Transfer.Response;
 using Chartinator.Transfer.Response.DataStructure;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace Chartinator.Service.Helper;
 
 public class DataHelper
 {
-    private static readonly string Desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-    private static readonly string DataFolder = Path.Combine(Desktop, "Data");
-    private static readonly string DataPointsCacheKeyPrefix = "DataPointsCacheKeyPrefix";
-
-
     public async Task<string> ReadRawData(string filePath)
     {
         var data = string.Empty;
@@ -30,24 +23,26 @@ public class DataHelper
         return data;
     }
 
-    public async Task<List<ChartDataPoint>> ParseExcelData(string rawData, IEnumerable<SelectedFileOption> fileOptions)
+    public async Task<List<ChartDataPoint>> ParseExcelData(string rawData, IEnumerable<DataFileOptions> fileOptions)
     {
         var result = new List<ChartDataPoint>();
 
         var excelLines = rawData.Split("\n");
-        
-        var selectedSections = fileOptions.Select(x => x.Label).ToList();
 
-        List<string> dataPointsAsString;
-        if (selectedSections.Contains("Section 1") && selectedSections.Count == 1)
+        var section1 = fileOptions.SingleOrDefault(x => x.Label.Equals("Section 1")).Checked;
+        var section2 = fileOptions.SingleOrDefault(x => x.Label.Equals("Section 2")).Checked;
+
+
+        var dataPointsAsString = new List<string>();
+        if (section1 && !section2)
         {
             dataPointsAsString = excelLines.Skip(0).Take(17488).ToList();
         }
-        else if (selectedSections.Contains("Section 2") && selectedSections.Count == 1)
+        else if (!section1 && section2)
         {
             dataPointsAsString = excelLines.Skip(17488).ToList();
         }
-        else
+        else if (section1 && section2)
         {
             dataPointsAsString = excelLines.ToList();
         }
@@ -76,31 +71,38 @@ public class DataHelper
         return result;
     }
 
-    public List<ulong> ParseTextFileData(IEnumerable<string> dataLines, int index)
+    public List<float> ParseTextFileColumnData(IEnumerable<string> dataLines, int index)
     {
-        var result = new List<ulong>();
+        var result = new List<float>();
 
         foreach (var dataLine in dataLines)
         {
             var dataLineValues = dataLine.Split("\t");
+
+            string value;
             try
             {
-                var molarMassValue = dataLineValues[index].TrimStart().TrimEnd();
-
-                try
-                {
-                    var dataPoint = ulong.Parse(molarMassValue, NumberStyles.Any);
-
-                    result.Add(dataPoint);
-                }
-                catch
-                {
-                }
+                value = dataLineValues[index].TrimStart().TrimEnd();
             }
             catch
             {
-                // ignored
+                continue;
             }
+            
+            try
+            {
+                var dataPoint = float.Parse(value, CultureInfo.CurrentUICulture);
+
+
+                result.Add(dataPoint);
+            }
+            catch
+            {
+                continue;
+            }
+
+
+
         }
 
         return result;

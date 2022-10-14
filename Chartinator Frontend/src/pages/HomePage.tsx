@@ -10,13 +10,10 @@ import { IChartDataInfo } from '../core/interfaces/chart/IChartDataInfo';
 import Chart from '../components/charts/Chart';
 import DataStructure from '../components/datastructure/DataStructure';
 import { useDataStructureService } from '../services/DataStructureService';
-import { ISelectedFile as ISelectedFile } from '../core/interfaces/datastructure/ISelectedFile';
-import { ISelectedFileOptions } from '../core/interfaces/datastructure/ISelectedFileOption';
-import { getValue } from '@mui/system';
+
 
 export default function HomePage() {
     const [dataStructure, setDataStructure] = useState<IDataStructureInfo>();
-    const [selectedFiles, setSelectedFiles] = useState<ISelectedFile[]>([]);
     const [chartData, setChartData] = useState<IChartDataInfo>();
     const [loading, setLoading] = useState<boolean>(true);
     const chartsService = useChartsService();
@@ -36,65 +33,61 @@ export default function HomePage() {
     }
 
     const handleFileChange = (filePath: string) => {
-        if (dataStructure === undefined) {
+        if (dataStructure === undefined){
             return;
         }
 
-        const selected = selectedFiles;
-        const findIndex = selectedFiles.findIndex(x => x.filePath === filePath);
+        dataStructure.folders.forEach(folder => {
+            folder.files.forEach(file => {
+                if (file.path === filePath){
+                    file.selected = !file.selected
+                }
+            });
+        });
 
-        if (findIndex === -1) {
-            const selection: ISelectedFile = {
-                filePath: filePath,
-                options: []
-            }
-
-            selected.push(selection);
-
-            console.log(selected);
-        }
-        else {
-            const fileToRemoveIndex = selectedFiles.findIndex(x => x.filePath === filePath);
-
-            selected.splice(fileToRemoveIndex, 1);
-        }
-
-        setSelectedFiles([...selected]);
+        setDataStructure({...dataStructure});
     }
 
     const onFileOptionChanged = (filePath: string, label: string, value: boolean) => {
-        const selected = selectedFiles;
-        const findIndex = selectedFiles.findIndex(x => x.filePath === filePath);
-
-        const selectedFile = selected[findIndex];
-
-        const optionsIndex = selectedFile.options.findIndex(x => x.label === label);
-
-        if (optionsIndex === -1){
-            const option:ISelectedFileOptions = {
-                label: label,
-                value: value,
-            }
-
-            selectedFile.options.push(option);
-        } else {
-            const optionToRemoveIndex = selectedFile.options.findIndex(x => x.label === label);
-
-            selectedFile.options.splice(optionToRemoveIndex, 1);
+        if (dataStructure === undefined){
+            return;
         }
-        
-        setSelectedFiles([...selected]);
+
+        dataStructure.folders.forEach(folder => {
+            folder.files.forEach(file => {
+                if (file.path === filePath){
+                    file.options.forEach(option => {
+                        if (option.label === label){
+                            option.checked = !option.checked;
+                        }
+                    });
+                }
+            });
+        });
+
+        console.log(dataStructure);
+
+        setDataStructure({...dataStructure});
+
     }
 
     const onExecuteClicked = () => {
         setLoading(true);
 
-        chartsService.ExecuteExcelsAsync(selectedFiles, [200])
+        if (dataStructure === undefined){
+            return;
+        }
+
+        chartsService.ExecuteExcelsAsync(dataStructure, [200])
             .then(response => {
                 setChartData(response.data);
                 setLoading(false);
             })
             .catch();
+    }
+
+    const isExecutionButtonDisabled = () => {
+        return false;
     }
 
     return (
@@ -118,7 +111,6 @@ export default function HomePage() {
 
                             {dataStructure !== undefined && (
                                 <DataStructure data={dataStructure}
-                                    selectedFiles={selectedFiles}
                                     onFileClicked={(filePath) => handleFileChange(filePath)}
                                     onFileOptionChanged={(filePath, label, value) => onFileOptionChanged(filePath, label, value)} />
                             )}
@@ -127,7 +119,7 @@ export default function HomePage() {
                                 variant='contained'
                                 size='large'
                                 sx={{ marginTop: 'auto' }}
-                                disabled={selectedFiles.length === 0}
+                                disabled={isExecutionButtonDisabled()}
                                 onClick={onExecuteClicked}>Execute</Button>
 
                         </ScrollBox>

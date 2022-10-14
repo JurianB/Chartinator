@@ -10,5 +10,6 @@ namespace Chartinator.Transfer.Response
         }
         public string Title { get; set; }
         public List<ChartData> Data { get; set; }
+        public string SubTitle { get; set; }
     }
 }

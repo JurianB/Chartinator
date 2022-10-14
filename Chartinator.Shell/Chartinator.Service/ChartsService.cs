@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Chartinator.Service.Helper;
-using Chartinator.Transfer.Request;
 using Chartinator.Transfer.Response;
 using Chartinator.Transfer.Response.DataStructure;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace Chartinator.Service;
 
@@ -22,15 +18,21 @@ public class ChartsService
     }
 
 
-    public async Task<ChartDataInfo> ReadData(List<SelectedFileData> files)
+    public async Task<ChartDataInfo> ReadData(DataStructureInfo dataStructureInfo)
     {
-        var result = new ChartDataInfo();
+        var result = new ChartDataInfo
+        {
+            Title = "Scanned files: "
+        };
 
+        var files = dataStructureInfo.Folders.SelectMany(x => x.Files).Where(x => x.Selected).ToList();
+
+        var filesScanned = new List<string>();
         foreach (var file in files)
         {
-            var fileInfo = new FileInfo(file.FilePath);
+            var fileInfo = new FileInfo(file.Path);
 
-            result.Title += $"{fileInfo.Name} ";
+            filesScanned.Add($"{fileInfo.Name}");
             switch (fileInfo.Extension)
             {
                 case ".xls":
@@ -44,19 +46,19 @@ public class ChartsService
             }
         }
 
-
-        result.Title += $"Based on {result.Data.SelectMany(x => x.DataPoints).Count()} scanned data points";
+        result.Title += string.Join(", ", filesScanned);
+        result.SubTitle += $"Based on {result.Data.SelectMany(x => x.DataPoints).Count()} scanned data points";
 
         return result;
     }
 
 
 
-    private async Task<ChartData> ReadExcelFileDataPoints(SelectedFileData file)
+    private async Task<ChartData> ReadExcelFileDataPoints(DataFile file)
     {
         var result = new ChartData();
 
-        var rawData = await _dataHelper.ReadRawData(file.FilePath);
+        var rawData = await _dataHelper.ReadRawData(file.Path);
 
         var dataPoints = await _dataHelper.ParseExcelData(rawData, file.Options);
 
@@ -66,76 +68,77 @@ public class ChartsService
         return result;
     }
 
-    private async Task<List<ChartData>> ReadTextFileDataPoints(SelectedFileData file)
+    private async Task<List<ChartData>> ReadTextFileDataPoints(DataFile file)
     {
         var result = new List<ChartData>();
 
-        var rawData = await _dataHelper.ReadRawData(file.FilePath);
+        var rawData = await _dataHelper.ReadRawData(file.Path);
 
         var dataLines = rawData.Split("\n").ToList();
 
         dataLines = dataLines.Skip(49).ToList();
         dataLines.RemoveAt(dataLines.Count -1);
 
-        var dataPoints = new List<ChartDataPoint>();
+        var molarMassDataPoints = _dataHelper.ParseTextFileColumnData(dataLines, 2);
 
-        var molarMassDataPoints = _dataHelper.ParseTextFileData(dataLines, 2);
+        var selectedCheckboxes = file.Options.Where(x => x.Checked).ToList();
 
-        var selectedCheckboxes = file.Options.Select(x => x.Label).ToList();
-
-        foreach (var label in selectedCheckboxes)
+        foreach (var checkbox in selectedCheckboxes)
         {
-            List<ulong> data;
-            if (label.Equals("rid1A/MMD"))
+            List<float> data;
+            if (checkbox.Label.Equals("rid1A/MMD"))
             {
                 var tempResult = new ChartData
                 {
                     Type = "line"
                 };
 
-                data = _dataHelper.ParseTextFileData(dataLines, 5);
+                data = _dataHelper.ParseTextFileColumnData(dataLines, 6);
 
                 var tempChartDataPoints = new List<ChartDataPoint>();
 
                 foreach (var molarMassDataPoint in molarMassDataPoints.Select((value, index) => new { i = index, value }))
                 {
-                    var correspondingRidPoint = data[molarMassDataPoint.i];
+                    var correspondingPoint= data[molarMassDataPoint.i];
 
                     tempChartDataPoints.Add(new ChartDataPoint
                     {
                         X = molarMassDataPoint.value,
-                        Y = correspondingRidPoint
+                        Y = correspondingPoint
                     });
                 }
 
                 tempResult.DataPoints = tempChartDataPoints;
+
+                tempResult.Legend = checkbox.Label;
 
                 result.Add(tempResult);
             }
 
-            if (label.Equals("vwd1A/MMD"))
+            if (checkbox.Label.Equals("vwd1A/MMD"))
             {
                 var tempResult = new ChartData
                 {
                     Type = "line"
                 };
 
-                data = _dataHelper.ParseTextFileData(dataLines, 8);
+                data = _dataHelper.ParseTextFileColumnData(dataLines, 9);
 
                 var tempChartDataPoints = new List<ChartDataPoint>();
 
                 foreach (var molarMassDataPoint in molarMassDataPoints.Select((value, index) => new { i = index, value }))
                 {
-                    var correspondingRidPoint = data[molarMassDataPoint.i];
+                    var correspondingPoint = data[molarMassDataPoint.i];
 
                     tempChartDataPoints.Add(new ChartDataPoint
                     {
                         X = molarMassDataPoint.value,
-                        Y = correspondingRidPoint
+                        Y = correspondingPoint
                     });
                 }
 
                 tempResult.DataPoints = tempChartDataPoints;
+                tempResult.Legend = checkbox.Label;
 
                 result.Add(tempResult);
             }

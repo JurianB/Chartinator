@@ -12,5 +12,6 @@ public class DataFile
     public string Name { get; set; }
     public string Path { get; set; }
     public FileType Type { get; set; }
+    public bool Selected { get; set; }
     public List<DataFileOptions> Options { get; set; }
 }

@@ -5,5 +5,6 @@ export interface IFile {
     path: string;
     size: string;
     type: number;
+    selected: boolean;
     options: IFileOptions[];
 }

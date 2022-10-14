@@ -42,6 +42,7 @@ public class DataStructureService
                         Id = $"{filePath}",
                         Type = DataFileOptionsType.Checkbox,
                         Label = "Section 1",
+                        Checked = false,
                     });
 
                     dataFile.Options.Add(new DataFileOptions
@@ -49,6 +50,7 @@ public class DataStructureService
                         Id = filePath,
                         Type = DataFileOptionsType.Checkbox,
                         Label = "Section 2",
+                        Checked = true,
                     });
                 }
 
@@ -59,6 +61,7 @@ public class DataStructureService
                         Id = $"{filePath}",
                         Type = DataFileOptionsType.Checkbox,
                         Label = "Molar mass",
+                        Checked = true,
                     });
 
                     dataFile.Options.Add(new DataFileOptions
@@ -66,6 +69,7 @@ public class DataStructureService
                         Id = filePath,
                         Type = DataFileOptionsType.Checkbox,
                         Label = "rid1A/MMD",
+                        Checked = true,
                     });
 
                     dataFile.Options.Add(new DataFileOptions
@@ -73,6 +77,7 @@ public class DataStructureService
                         Id = filePath,
                         Type = DataFileOptionsType.Checkbox,
                         Label = "vwd1A/MMD",
+                        Checked = false,
                     });
                 }
 

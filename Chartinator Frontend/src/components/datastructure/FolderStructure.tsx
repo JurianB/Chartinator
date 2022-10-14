@@ -4,11 +4,11 @@ import { Collapse, List, ListItemButton, ListItemIcon, ListItemText } from '@mui
 import { IFolder } from '../../core/interfaces/datastructure/IFolder'
 import FolderIcon from '@mui/icons-material/Folder';
 import FileStructure from './FileStructure';
-import { ISelectedFile } from '../../core/interfaces/datastructure/ISelectedFile';
+import { IDataStructureInfo } from '../../core/interfaces/datastructure/IDataStructureInfo';
 
 interface IFolderStructureProps {
     folder: IFolder,
-    selectedFiles: ISelectedFile[];
+    data: IDataStructureInfo;
     onFileClicked: (filePath: string) => void;
     onFileOptionChanged: (filePath: string, label: string, checked: boolean) => void;
 }
@@ -36,7 +36,7 @@ export default function FolderStructure(props: IFolderStructureProps) {
                             file={file}
                             onFileClicked={props.onFileClicked}
                             onFileOptionChanged={props.onFileOptionChanged}
-                            selectedFiles={props.selectedFiles} />
+                        />
                     })}
                 </List>
             </Collapse>

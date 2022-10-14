@@ -1,12 +1,10 @@
-import { Collapse, FormGroup, ListItemButton, ListItemText, Tooltip, Typography } from '@mui/material'
-import React, { ReactElement } from 'react'
+import { Collapse, FormGroup, ListItemButton, ListItemText, } from '@mui/material'
+import React from 'react'
 import { IFile } from '../../core/interfaces/datastructure/IFile';
-import { ISelectedFile } from '../../core/interfaces/datastructure/ISelectedFile';
 import FileSettings from './FileSettings';
 
 interface IFileStructure {
     file: IFile,
-    selectedFiles: ISelectedFile[];
     onFileClicked: (filePath: string) => void;
     onFileOptionChanged: (filePath: string, label: string, checked: boolean) => void;
 }
@@ -26,7 +24,7 @@ export default function FileStructure(props: IFileStructure) {
         <>
             <ListItemButton
                 onClick={handleClick}
-                selected={props.selectedFiles.findIndex(x => x.filePath === props.file.path) === -1 ? false : true}
+                selected={props.file.selected}
             >
                 <ListItemText primary={props.file.name} />
             </ListItemButton>

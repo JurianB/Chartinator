@@ -1,5 +1,5 @@
 import Exchange from '../core/Exchange';
-import { ISelectedFile } from '../core/interfaces/datastructure/ISelectedFile';
+import { IDataStructureInfo } from '../core/interfaces/datastructure/IDataStructureInfo';
 import { IResponse } from '../core/interfaces/system/IResponse';
 import { IStateContext } from '../core/interfaces/system/IStateContext';
 import { useSession } from '../core/SessionProvider';
@@ -19,7 +19,7 @@ export default class ChartsService {
     }
 
     
-    async ExecuteExcelsAsync(body:ISelectedFile[], codes: number[]) {
+    async ExecuteExcelsAsync(body:IDataStructureInfo, codes: number[]) {
         let api = `/api/charts`;
         console.log('Exchange: ExecuteExcelsAsync');
 

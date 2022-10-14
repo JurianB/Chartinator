@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using Chartinator.Shell.Controllers.Base;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Threading.Tasks;
 using Chartinator.Service;
 using Chartinator.Shell.Core;
-using Chartinator.Transfer.Request;
+using Chartinator.Transfer.Response.DataStructure;
 
 namespace Chartinator.Shell.Controllers
 {
@@ -20,11 +19,11 @@ namespace Chartinator.Shell.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetChartData([FromBody] List<SelectedFileData> files)
+        public async Task<IActionResult> GetChartData([FromBody] DataStructureInfo dataStructure)
         {
             try
             {
-                var data = await _chartsService.ReadData(files);
+                var data = await _chartsService.ReadData(dataStructure);
                
                 return HandleResult(new OperationResult(HttpStatusCode.OK, data));
             }

@@ -7,4 +7,5 @@ public class DataFileOptions
     public string Label { get; set; }
 
     public DataFileOptionsType Type { get; set; }
+    public bool Checked { get; set; }
 }
